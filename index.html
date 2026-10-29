@@ -233,6 +233,14 @@ footer a:hover{color:var(--fg)}
   .tabbar .tab-cart{color:var(--accent);font-weight:700}
   .tab-badge{position:absolute;top:2px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font:700 .7rem/18px var(--font);text-align:center;font-variant-numeric:tabular-nums}
 }
+.tiers{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:.4rem;font-variant-numeric:tabular-nums}
+.tiers td{padding:.35rem 0;border-top:1px solid var(--line);white-space:nowrap}
+.tiers td:last-child{text-align:right;font-weight:600}
+.tiers tr.on td{color:var(--accent);font-weight:700}
+.applied{font-size:.88rem;color:var(--accent);font-weight:600}
+.hint{background:var(--accent-soft);border-radius:6px;padding:.6rem .8rem;font-size:.9rem}
+.offer{display:grid;gap:.8rem}
+.offer .btn{justify-self:start}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
 </style>
 </head>
@@ -270,7 +278,7 @@ footer a:hover{color:var(--fg)}
         <aside class="panel" aria-label="Informations de commande">
           <h3>En bref</h3>
           <dl class="rows">
-            <div><dt>Prix</dt><dd>3 500 FCFA le poulet de chair</dd></div>
+            <div><dt>Prix</dt><dd id="hero-price">3 500 FCFA le poulet de chair</dd></div>
             <div><dt>Livraison</dt><dd>Toutes zones</dd></div>
             <div><dt>Commande</dt><dd>Envoyée sur WhatsApp, confirmée par message</dd></div>
             <div><dt>Paiement</dt><dd>Wave ou espèces à la livraison</dd></div>
@@ -286,7 +294,7 @@ footer a:hover{color:var(--fg)}
       <div class="section-head">
         <span class="eyebrow">Catalogue</span>
         <h2>Nos poulets de chair</h2>
-        <p class="lead">Les prix sont en FCFA. Ajoutez vos articles, la commande se prépare dans le panneau « Ma commande ».</p>
+        <p class="lead">Les prix sont en FCFA. Plus vous commandez, moins le poulet coûte cher. Ajoutez vos poulets, la commande se prépare dans le panneau « Commande ».</p>
       </div>
       <div class="grid" id="grid"></div>
     </div>
@@ -323,9 +331,10 @@ footer a:hover{color:var(--fg)}
         <h2>Avant de commander</h2>
       </div>
       <div class="faq">
-        <details><summary>Comment le prix final est-il confirmé ?</summary><p>Le panier affiche le total des poulets à 3 500 FCFA pièce. Les frais de livraison éventuels sont confirmés sur WhatsApp avant la livraison.</p></details>
-        <details><summary>Puis-je commander en grande quantité ?</summary><p>Oui. Indiquez la quantité dans votre commande, ou écrivez-nous sur WhatsApp pour un gros volume.</p></details>
-        <details><summary>Quels moyens de paiement ?</summary><p>Vous payez soit par Wave, soit en espèces à la livraison. Choisissez votre mode de paiement dans la commande. Le numéro Wave est le <strong>77 612 12 24</strong>, le même que notre WhatsApp. Nous confirmons la commande avant que vous payiez.</p></details>
+        <details><summary>Y a-t-il une remise si j'achète plusieurs poulets ?</summary><p>Oui. Le prix du poulet baisse avec la quantité. Le tableau des prix est dans le catalogue, et le panier applique la remise tout seul.</p></details>
+        <details><summary>Puis-je négocier le prix ?</summary><p>Oui. Dans votre commande, touchez « Proposer mon prix » et indiquez le total que vous proposez. Votre offre nous arrive sur WhatsApp. Rien n'est accepté tant que nous ne l'avons pas confirmé par message.</p></details>
+        <details><summary>Comment le prix final est-il confirmé ?</summary><p>Le panier affiche le total des poulets au prix du catalogue, remise de quantité comprise. Les frais de livraison éventuels sont confirmés sur WhatsApp avant la livraison.</p></details>
+        <details><summary>Quels moyens de paiement ?</summary><p>Vous payez soit par Wave, soit en espèces à la livraison. Le numéro Wave est le <strong>77 612 12 24</strong>, le même que notre WhatsApp. Nous confirmons la commande avant que vous payiez.</p></details>
       </div>
     </div>
   </section>
@@ -364,6 +373,13 @@ footer a:hover{color:var(--fg)}
   </div>
   <div class="d-body">
     <div id="lines"></div>
+    <div class="offer" id="offer" hidden>
+      <button type="button" class="btn btn-outline btn-sm" id="offer-toggle" aria-expanded="false">Proposer mon prix</button>
+      <div id="offer-box" hidden>
+        <div class="field"><label for="f-offer">Votre offre pour l'ensemble de la commande (FCFA)</label><input id="f-offer" type="text" inputmode="numeric" placeholder="Ex. 15 000" autocomplete="off"></div>
+        <p class="fineprint">Votre offre part sur WhatsApp avec la commande. Elle n'est valable qu'après notre accord par message.</p>
+      </div>
+    </div>
     <div class="form" id="form">
       <div class="two">
         <div class="field"><label for="f-name">Nom</label><input id="f-name" autocomplete="name" placeholder="Prénom et nom"></div>
@@ -384,8 +400,10 @@ footer a:hover{color:var(--fg)}
   </div>
   <div class="d-foot">
     <div class="sum"><span>Sous-total</span><span id="s-sub">0 FCFA</span></div>
+    <div class="sum" id="s-disc-row" hidden><span>Remise quantité</span><span id="s-disc">0 FCFA</span></div>
     <div class="sum"><span>Livraison</span><span id="s-fee">0 FCFA</span></div>
     <div class="sum total"><span>Total des poulets</span><span id="s-total">0 FCFA</span></div>
+    <div class="sum" id="s-offer-row" hidden><span>Votre offre</span><span id="s-offer">0 FCFA</span></div>
     <p class="msg" id="msg" role="status" aria-live="polite"></p>
     <a class="btn btn-primary" id="send" href="#" target="_blank" rel="noopener">Envoyer la commande sur WhatsApp</a>
     <p class="fineprint">Le message s'ouvre dans WhatsApp, prêt à envoyer. La commande n'est prise en compte qu'une fois le message envoyé.</p>
@@ -398,13 +416,12 @@ const { WHATSAPP, PHONE_TEXT } = window.APP_CONFIG;
 const FREE_FROM = 30000;
 
 /* Photos : indiquer le chemin du fichier, par exemple "photos/vif.jpg", pour remplacer les emplacements. */
-const PHOTOS = { hero: null, poulet: null, lot3: null, lot10: null };
+const PHOTOS = { hero: null, poulet: null };
 
 let PRODUCTS = [
-  { id:"poulet", cat:"vif", name:"Poulet de chair", w:"1 poulet", price:3500, unit:"pièce", tag:"Poulet de chair", desc:"Poulet de chair vendu à la pièce. Indiquez la quantité voulue dans votre commande." },
-  { id:"lot3", cat:"lot", name:"Lot de 3 poulets", w:"3 poulets", price:10500, unit:"lot", tag:"Lot", desc:"Trois poulets de chair au même prix unitaire de 3 500 FCFA." },
-  { id:"lot10", cat:"lot", name:"Lot de 10 poulets", w:"10 poulets", price:35000, unit:"lot", tag:"Lot", desc:"Dix poulets de chair au même prix unitaire de 3 500 FCFA. Pour les cérémonies et les repas de groupe." }
+  { id:"poulet", cat:"vif", name:"Poulet de chair", w:"1 poulet", price:3500, unit:"pièce", tag:"Poulet de chair", tiered:true, desc:"Poulet de chair vendu à la pièce. Le prix baisse avec la quantité, la remise s'applique à tout votre panier." }
 ];
+const TIERS = (window.APP_CONFIG.TIERS || []).slice().sort((a,b)=>a.min-b.min);
 let ZONES = [
   { id:"livraison", label:"Livraison, toutes zones", slot:"Matin ou après-midi", fee:0 }
 ];
@@ -418,7 +435,14 @@ Object.keys(cart).forEach(k => { if(!known.has(k) || !(cart[k]>0)) delete cart[k
 const save = () => { try { localStorage.setItem("tv-cart", JSON.stringify(cart)); } catch(e) {} };
 const qty = id => cart[id] || 0;
 const setQty = (id,q) => { if(q>0) cart[id]=Math.min(q,99); else delete cart[id]; save(); render(); };
-const subtotal = () => PRODUCTS.reduce((s,p)=>s+qty(p.id)*p.price,0);
+const unitPrice = (p,n) => { let u = p.price; if(p.tiered) TIERS.forEach(t=>{ if(n>=t.min) u = t.price; }); return u; };
+const lineTotal = p => qty(p.id)*unitPrice(p,qty(p.id));
+const baseTotal = () => PRODUCTS.reduce((s,p)=>s+qty(p.id)*p.price,0);
+const subtotal = () => PRODUCTS.reduce((s,p)=>s+lineTotal(p),0);
+const discount = () => baseTotal()-subtotal();
+let offerOn = false;
+const offerValue = () => parseInt(($("f-offer").value||"").replace(/\D/g,""),10) || 0;
+const nextTier = (p,n) => p.tiered ? TIERS.find(t=>t.min>n) : null;
 const items = () => PRODUCTS.filter(p=>qty(p.id)>0);
 const zone = () => ZONES.find(z=>z.id===$("f-zone").value) || ZONES[0];
 const fee = () => { const s=subtotal(); if(!s) return 0; if(zone().id==="retrait") return 0; return s>=FREE_FROM ? 0 : zone().fee; };
@@ -437,17 +461,29 @@ function renderHero(){
 
 function renderFilters(){}
 
+function tierTable(p,q){
+  if(!p.tiered || !TIERS.length) return "";
+  const pts = [{from:1,price:p.price}].concat(TIERS.map(t=>({from:t.min,price:t.price})));
+  const rows = pts.map((t,i)=>{
+    const nx = pts[i+1], to = nx ? nx.from-1 : null;
+    const label = to===null ? t.from+" et plus" : (t.from===to ? String(t.from) : t.from+" à "+to);
+    const on = q>=t.from && (to===null || q<=to);
+    return '<tr'+(on?' class="on"':'')+'><td>'+label+(t.from===1&&to===1?" poulet":" poulets")+'</td><td>'+fcfa(t.price)+' l\'unité</td></tr>';
+  }).join("");
+  return '<table class="tiers" aria-label="Prix selon la quantité"><tbody>'+rows+'</tbody></table>';
+}
 function renderGrid(){
   const list = PRODUCTS.filter(p => filter==="all" || p.cat===filter);
   $("grid").innerHTML = list.map(p=>{
-    const q = qty(p.id);
+    const q = qty(p.id), u = unitPrice(p,q);
     const ph = PHOTOS[p.id]
       ? '<div class="photo"><img src="'+PHOTOS[p.id]+'" alt="'+p.name+'" loading="lazy"></div>'
       : '<div class="photo"><div class="photo-empty" style="width:100%;height:100%"><div class="weight">'+p.w+'<small>quantité</small></div></div></div>';
     const ctl = q>0
       ? '<div class="stepper"><button type="button" data-dec="'+p.id+'" aria-label="Retirer un">&minus;</button><output aria-live="polite">'+q+'</output><button type="button" data-inc="'+p.id+'" aria-label="Ajouter un">+</button></div>'
       : '<button type="button" class="btn btn-primary btn-sm" data-add="'+p.id+'">Ajouter</button>';
-    return '<article class="card">'+ph+'<div class="card-body"><span class="tag">'+p.tag+'</span><h3>'+p.name+'</h3><p class="desc">'+p.desc+'</p><div class="buy"><div class="price">'+fcfa(p.price).replace(" FCFA","")+' <small>FCFA / '+p.unit+'</small></div>'+ctl+'</div></div></article>';
+    const applied = q>0 && u<p.price ? '<p class="applied">Prix appliqué : '+fcfa(u)+' l\'unité</p>' : "";
+    return '<article class="card">'+ph+'<div class="card-body"><span class="tag">'+p.tag+'</span><h3>'+p.name+'</h3><p class="desc">'+p.desc+'</p>'+tierTable(p,q)+applied+'<div class="buy"><div class="price">'+fcfa(p.price).replace(" FCFA","")+' <small>FCFA / '+p.unit+'</small></div>'+ctl+'</div></div></article>';
   }).join("");
 }
 
@@ -459,21 +495,35 @@ function renderCart(){
   const list = items();
   const n = list.reduce((s,p)=>s+qty(p.id),0);
   $("count").textContent = n; $("count2").textContent = n; $("count2").hidden = n === 0;
-  $("lines").innerHTML = list.length
-    ? list.map(p=>'<div class="line"><div><div class="n">'+p.name+'</div><div class="u">'+fcfa(p.price)+' / '+p.unit+'</div></div><div class="t">'+fcfa(qty(p.id)*p.price)+'</div><div class="stepper"><button type="button" data-dec="'+p.id+'" aria-label="Retirer un">&minus;</button><output>'+qty(p.id)+'</output><button type="button" data-inc="'+p.id+'" aria-label="Ajouter un">+</button></div><div></div></div>').join("")
-    : '<div class="empty"><strong>Votre commande est vide</strong>Ajoutez des poulets depuis le catalogue pour la préparer.</div>';
-  const s = subtotal(), f = fee();
-  $("s-sub").textContent = fcfa(s);
+  if(!list.length && offerOn){ offerOn = false; $("f-offer").value = ""; }
+  let html = list.map(p=>{
+    const u = unitPrice(p,qty(p.id));
+    return '<div class="line"><div><div class="n">'+p.name+'</div><div class="u">'+fcfa(u)+' / '+p.unit+(u<p.price?' (prix remisé)':'')+'</div></div><div class="t">'+fcfa(lineTotal(p))+'</div><div class="stepper"><button type="button" data-dec="'+p.id+'" aria-label="Retirer un">&minus;</button><output>'+qty(p.id)+'</output><button type="button" data-inc="'+p.id+'" aria-label="Ajouter un">+</button></div><div></div></div>';
+  }).join("");
+  list.forEach(p=>{ const t = nextTier(p,qty(p.id)); if(t) html += '<p class="hint">Plus que '+(t.min-qty(p.id))+' poulet'+(t.min-qty(p.id)>1?'s':'')+' pour passer à '+fcfa(t.price)+' l\'unité.</p>'; });
+  $("lines").innerHTML = list.length ? html : '<div class="empty"><strong>Votre commande est vide</strong>Ajoutez des poulets depuis le catalogue pour la préparer.</div>';
+  $("offer").hidden = !list.length;
+  $("offer-box").hidden = !offerOn;
+  $("offer-toggle").textContent = offerOn ? "Retirer ma proposition" : "Proposer mon prix";
+  $("offer-toggle").setAttribute("aria-expanded", String(offerOn));
+  const s = subtotal(), d = discount();
+  $("s-sub").textContent = fcfa(baseTotal());
+  $("s-disc-row").hidden = d <= 0; $("s-disc").textContent = "- "+fcfa(d);
   $("s-fee").textContent = "À confirmer";
   $("s-total").textContent = fcfa(s);
+  const ov = offerValue();
+  $("s-offer-row").hidden = !(offerOn && ov>0); $("s-offer").textContent = fcfa(ov);
   $("addr-field").hidden = zone().id==="retrait";
   updateLink();
 }
 
 function buildMessage(){
-  const lines = items().map(p=>"- "+qty(p.id)+" x "+p.name+" : "+fcfa(qty(p.id)*p.price));
-  let m = "Bonjour Rona Poulets, je souhaite passer commande :\n"+lines.join("\n");
+  const lines = items().map(p=>"- "+qty(p.id)+" x "+p.name+" à "+fcfa(unitPrice(p,qty(p.id)))+" : "+fcfa(lineTotal(p)));
+  const offer = offerOn && offerValue()>0;
+  let m = "Bonjour Rona Poulets, je souhaite passer commande"+(offer?" avec une proposition de prix":"")+" :\n"+lines.join("\n");
   m += "\n\nTotal des poulets : "+fcfa(subtotal());
+  if(discount()>0) m += " (remise quantité comprise : "+fcfa(discount())+")";
+  if(offer) m += "\nPRIX PROPOSÉ : "+fcfa(offerValue())+" pour l'ensemble. Merci de confirmer ou de me faire une contre-proposition.";
   m += "\nLivraison : frais à confirmer";
   m += "\n\nNom : "+$("f-name").value.trim();
   m += "\nTéléphone : "+$("f-phone").value.trim();
@@ -488,6 +538,11 @@ function updateLink(){ $("send").href = "https://wa.me/"+WHATSAPP+"?text="+encod
 
 function validate(){
   if(!items().length) return "Ajoutez au moins un poulet à votre commande.";
+  if(offerOn){
+    const v = offerValue();
+    if(!v) return "Indiquez le prix que vous proposez, ou retirez votre proposition.";
+    if(v >= subtotal()) return "Votre offre doit être inférieure au total de "+fcfa(subtotal())+". Retirez la proposition pour commander au prix affiché.";
+  }
   if(!$("f-name").value.trim()) return "Indiquez votre nom.";
   if($("f-phone").value.replace(/\D/g,"").length < 9) return "Indiquez un numéro de téléphone valide (9 chiffres minimum).";
   if(zone().id!=="retrait" && !$("f-address").value.trim()) return "Indiquez votre adresse ou votre quartier.";
@@ -498,7 +553,7 @@ function submitOrder(){
   const err = validate(); $("msg").textContent = err;
   if(err) return;
   const url = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(buildMessage());
-  cart = {}; save(); render();
+  cart = {}; save(); offerOn = false; $("f-offer").value = ""; render();
   window.location.href = url;
 }
 
@@ -547,6 +602,7 @@ document.addEventListener("click", e=>{
   else if(t.dataset.dec) setQty(t.dataset.dec,qty(t.dataset.dec)-1);
   else if(t.dataset.f){ filter=t.dataset.f; renderFilters(); renderGrid(); }
   else if(t.id==="install") installApp();
+  else if(t.id==="offer-toggle"){ offerOn = !offerOn; if(!offerOn) $("f-offer").value = ""; $("msg").textContent = ""; renderCart(); if(offerOn) $("f-offer").focus(); }
   else if(t.id==="open-cart" || t.id==="open-cart2") openCart();
   else if(t.id==="close-cart") closeCart();
   else if(t.id==="send"){ e.preventDefault(); submitOrder(); }
@@ -554,7 +610,7 @@ document.addEventListener("click", e=>{
 $("overlay").addEventListener("click", closeCart);
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("drawer").hidden) closeCart(); });
 $("f-pay").addEventListener("change", ()=>{ $("pay-hint").hidden = $("f-pay").value !== "Wave"; });
-["f-name","f-phone","f-zone","f-address","f-date","f-slot","f-pay","f-note"].forEach(id=>{
+["f-name","f-phone","f-zone","f-address","f-date","f-slot","f-pay","f-note","f-offer"].forEach(id=>{
   $(id).addEventListener("input", ()=>{ $("msg").textContent=""; renderCart(); });
   $(id).addEventListener("change", ()=>{ renderCart(); });
 });
@@ -566,6 +622,7 @@ $("f-pay").addEventListener("change", ()=>{ $("pay-hint").hidden = $("f-pay").va
   $("wa-contact").href = "https://wa.me/"+WHATSAPP;
   $("nav-wa").href = "https://wa.me/"+WHATSAPP;
   $("phone-text").textContent = PHONE_TEXT;
+  if(TIERS.length) $("hero-price").textContent = fcfa(PRODUCTS[0].price)+" le poulet, moins cher dès "+TIERS[0].min+" poulets";
   renderHero(); renderFilters(); renderZones(); render();
 })();
 </script>
