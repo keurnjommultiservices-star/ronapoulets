@@ -45,6 +45,7 @@
   --overlay:rgba(0,0,0,.6);color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth;scroll-padding-top:84px}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 1rem/1.6 var(--font);-webkit-text-size-adjust:100%}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
@@ -66,7 +67,7 @@ a{color:inherit}
 /* header */
 .site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
 .site-header .wrap{display:flex;align-items:center;gap:1.5rem;min-height:64px}
-.brand{display:flex;align-items:center;gap:.65rem;text-decoration:none;font-weight:700;font-size:1.1rem;letter-spacing:-.01em}
+.brand{display:flex;align-items:center;gap:.65rem;white-space:nowrap;text-decoration:none;font-weight:700;font-size:1.1rem;letter-spacing:-.01em}
 .brand-mark{width:34px;height:34px;border-radius:6px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:.8rem;font-weight:700;letter-spacing:.02em}
 .nav{display:flex;gap:1.4rem;margin-left:auto}
 .nav a{text-decoration:none;color:var(--muted);font-weight:500;font-size:.95rem}
@@ -216,6 +217,19 @@ footer a:hover{color:var(--fg)}
   .two{grid-template-columns:1fr}
   dl.rows>div,.split .panel dl.rows>div{grid-template-columns:1fr;gap:.15rem}
 }
+
+.menu-btn{display:none;width:40px;height:40px;border:1px solid var(--line-strong);border-radius:6px;background:transparent;color:var(--fg);cursor:pointer;align-items:center;justify-content:center;padding:0}
+.mobile-menu{border-top:1px solid var(--line);background:var(--bg)}
+.mobile-menu .wrap{display:grid;gap:0;padding-block:.4rem .9rem}
+.mobile-menu a{padding:.85rem 0;border-bottom:1px solid var(--line);text-decoration:none;font-weight:500}
+.mobile-menu .btn{margin-top:.8rem}
+@media (max-width:900px){
+  .menu-btn{display:inline-flex;margin-left:auto}
+  .menu-btn + .cart-btn{margin-left:0}
+  #install{display:none}
+}
+@media (min-width:901px){.mobile-menu{display:none!important}}
+@media (max-width:400px){.site-header .wrap{gap:.6rem}.brand{font-size:1rem}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
 </style>
 </head>
@@ -231,8 +245,19 @@ footer a:hover{color:var(--fg)}
       <a href="#questions">Questions</a>
     </nav>
     <button class="btn btn-outline btn-sm" id="install" type="button" hidden>Installer l'appli</button>
-    <button class="btn btn-primary btn-sm cart-btn" id="open-cart" type="button">Ma commande <span class="count" id="count">0</span></button>
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <button class="btn btn-primary btn-sm cart-btn" id="open-cart" type="button">Commande <span class="count" id="count">0</span></button>
   </div>
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Menu" hidden>
+    <div class="wrap">
+      <a href="#catalogue">Catalogue</a>
+      <a href="#commande">Comment commander</a>
+      <a href="#livraison">Livraison</a>
+      <a href="#questions">Questions fréquentes</a>
+      <a href="#contact">Nous écrire sur WhatsApp</a>
+      <button class="btn btn-outline" id="install2" type="button" hidden>Installer l'appli</button>
+    </div>
+  </nav>
 </header>
 
 <main id="accueil">
@@ -313,7 +338,7 @@ footer a:hover{color:var(--fg)}
     </div>
   </section>
 
-  <div class="band">
+  <div class="band" id="contact">
     <div class="wrap">
       <div>
         <h2>Une question avant de commander ?</h2>
@@ -479,13 +504,13 @@ function submitOrder(){
 
 /* Installation en appli */
 let deferredPrompt = null;
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; $("install").hidden = false; });
-window.addEventListener("appinstalled", () => { deferredPrompt = null; $("install").hidden = true; });
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; $("install").hidden = false; $("install2").hidden = false; });
+window.addEventListener("appinstalled", () => { deferredPrompt = null; $("install").hidden = true; $("install2").hidden = true; });
 async function installApp(){
   if(!deferredPrompt) return;
   deferredPrompt.prompt();
   try{ await deferredPrompt.userChoice; }catch(e){}
-  deferredPrompt = null; $("install").hidden = true;
+  deferredPrompt = null; $("install").hidden = true; $("install2").hidden = true;
 }
 (function iosHint(){
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -504,13 +529,16 @@ document.addEventListener("click", e=>{
   else if(t.dataset.inc) setQty(t.dataset.inc,qty(t.dataset.inc)+1);
   else if(t.dataset.dec) setQty(t.dataset.dec,qty(t.dataset.dec)-1);
   else if(t.dataset.f){ filter=t.dataset.f; renderFilters(); renderGrid(); }
-  else if(t.id==="install") installApp();
+  else if(t.id==="install" || t.id==="install2") installApp();
   else if(t.id==="open-cart") openCart();
   else if(t.id==="close-cart") closeCart();
   else if(t.id==="send"){ e.preventDefault(); submitOrder(); }
 });
+function setMenu(open){ $("mobile-menu").hidden = !open; $("menu-btn").setAttribute("aria-expanded", String(open)); $("menu-btn").setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu"); }
+$("menu-btn").addEventListener("click", ()=> setMenu($("mobile-menu").hidden));
+$("mobile-menu").addEventListener("click", e=>{ if(e.target.closest("a")) setMenu(false); });
 $("overlay").addEventListener("click", closeCart);
-document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("drawer").hidden) closeCart(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ if(!$("drawer").hidden) closeCart(); else setMenu(false); } });
 $("f-pay").addEventListener("change", ()=>{ $("pay-hint").hidden = $("f-pay").value !== "Wave"; });
 ["f-name","f-phone","f-zone","f-address","f-date","f-slot","f-pay","f-note"].forEach(id=>{
   $(id).addEventListener("input", ()=>{ $("msg").textContent=""; renderCart(); });
