@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Poulets de chair à 3 500 FCFA, livrés dans toutes les zones. Commande en ligne, confirmation sur WhatsApp.">
+<title>Rona Poulets</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sticky header, hero with order-info panel, 3-column catalogue, side drawer for the cart and WhatsApp order. */
+:root{
+  --font:'Source Sans 3',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --bg:#F5F7F5;
+  --surface:#FFFFFF;
+  --fg:#1C2822;
+  --muted:#5B6860;
+  --line:#E0E5E1;
+  --line-strong:#C6CEC8;
+  --accent:#1F5D3A;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#E4EFE8;
+  --warn:#B45309;
+  --ok:#16794A;
+  --err:#B42318;
+  --overlay:rgba(12,20,16,.45);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1512;--surface:#161E19;--fg:#E7EEE9;--muted:#9AA9A0;--line:#26322B;--line-strong:#37453C;
+    --accent:#5DB887;--accent-ink:#0B1A12;--accent-soft:#1B2B22;--warn:#E0A04A;--ok:#5DB887;--err:#F0867B;
+    --overlay:rgba(0,0,0,.6);color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1512;--surface:#161E19;--fg:#E7EEE9;--muted:#9AA9A0;--line:#26322B;--line-strong:#37453C;
+  --accent:#5DB887;--accent-ink:#0B1A12;--accent-soft:#1B2B22;--warn:#E0A04A;--ok:#5DB887;--err:#F0867B;
+  --overlay:rgba(0,0,0,.6);color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1rem/1.6 var(--font);-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.015em;line-height:1.15;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:44px;padding:0 1.1rem;border-radius:6px;border:1px solid transparent;font:600 .95rem var(--font);cursor:pointer;text-decoration:none;transition:filter .15s,background .15s}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{filter:brightness(.92)}
+.btn-outline{background:transparent;border-color:var(--line-strong);color:var(--fg)}
+.btn-outline:hover{background:var(--accent-soft)}
+.btn-sm{min-height:38px;padding:0 .9rem;font-size:.9rem}
+.btn[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+
+/* header */
+.site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.site-header .wrap{display:flex;align-items:center;gap:1.5rem;min-height:64px}
+.brand{display:flex;align-items:center;gap:.65rem;text-decoration:none;font-weight:700;font-size:1.1rem;letter-spacing:-.01em}
+.brand-mark{width:34px;height:34px;border-radius:6px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:.8rem;font-weight:700;letter-spacing:.02em}
+.nav{display:flex;gap:1.4rem;margin-left:auto}
+.nav a{text-decoration:none;color:var(--muted);font-weight:500;font-size:.95rem}
+.nav a:hover{color:var(--fg)}
+.cart-btn{margin-left:auto}
+.nav + .cart-btn{margin-left:0}
+.count{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--accent-ink);color:var(--accent);font-size:.8rem;font-weight:700;display:inline-grid;place-items:center;font-variant-numeric:tabular-nums}
+
+/* sections */
+section{padding-block:4rem}
+.section-head{display:flex;flex-direction:column;gap:.5rem;margin-bottom:2rem;max-width:62ch}
+.eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h2{font-size:clamp(1.55rem,3.2vw,2.1rem)}
+.lead{color:var(--muted);font-size:1.075rem}
+
+/* hero */
+.hero{padding-block:3.5rem 3rem}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:3rem;align-items:center}
+.hero h1{font-size:clamp(2.1rem,5.2vw,3.4rem);margin:.75rem 0 1.1rem}
+.hero .lead{max-width:52ch}
+.hero-cta{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.75rem}
+.hero-note{margin-top:1.1rem;font-size:.9rem;color:var(--muted)}
+.hero-photo{margin-top:2.5rem}
+.photo{position:relative;border-radius:8px;overflow:hidden;background:var(--accent-soft);border:1px solid var(--line)}
+.photo img{display:block;width:100%;height:100%;object-fit:cover}
+.photo-empty{display:flex;align-items:flex-end;padding:1rem;color:var(--muted);font-size:.85rem;background:repeating-linear-gradient(135deg,var(--accent-soft),var(--accent-soft) 14px,transparent 14px,transparent 28px)}
+.hero-photo .photo{aspect-ratio:21/8;max-width:100%}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1.4rem}
+.panel h3{font-size:1.05rem;margin-bottom:.9rem}
+dl.rows{margin:0;display:grid;gap:0}
+dl.rows>div{display:grid;grid-template-columns:minmax(0,9.5rem) minmax(0,1fr);gap:1rem;padding:.7rem 0;border-top:1px solid var(--line)}
+dl.rows>div:first-child{border-top:0;padding-top:0}
+dl.rows dt{color:var(--muted);font-size:.9rem}
+dl.rows dd{margin:0;font-weight:500}
+
+/* catalogue */
+.filters{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
+.chip{min-height:40px;padding:0 1rem;border-radius:6px;border:1px solid var(--line-strong);background:transparent;color:var(--fg);font:500 .92rem var(--font);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.1rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;overflow:hidden}
+.card .photo{border:0;border-radius:0;border-bottom:1px solid var(--line);aspect-ratio:4/3}
+.card .photo-empty{flex-direction:column;align-items:flex-start;justify-content:space-between}
+.weight{font-size:2.1rem;font-weight:700;color:var(--accent);letter-spacing:-.02em;line-height:1}
+.weight small{display:block;font-size:.78rem;font-weight:500;color:var(--muted);letter-spacing:0;margin-top:.3rem}
+.card-body{padding:1.1rem 1.1rem 1.2rem;display:flex;flex-direction:column;gap:.5rem;flex:1;min-width:0}
+.card h3{font-size:1.1rem}
+.card .desc{color:var(--muted);font-size:.93rem;flex:1}
+.tag{align-self:flex-start;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:.15rem .5rem;border-radius:4px}
+.buy{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-top:.6rem;flex-wrap:wrap}
+.price{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+.price small{font-size:.82rem;font-weight:500;color:var(--muted)}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden}
+.stepper button{width:40px;height:40px;border:0;background:transparent;color:var(--fg);font:600 1.1rem var(--font);cursor:pointer}
+.stepper button:hover{background:var(--accent-soft)}
+.stepper output{min-width:34px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* steps */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.1rem;counter-reset:s}
+.steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1.3rem}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;margin-bottom:.9rem}
+.steps h3{font-size:1.05rem;margin-bottom:.4rem}
+.steps p{color:var(--muted);font-size:.95rem}
+
+/* farm */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+.split .panel dl.rows>div{grid-template-columns:minmax(0,10.5rem) minmax(0,1fr)}
+.checks{list-style:none;margin:1.25rem 0 0;padding:0;display:grid;gap:.7rem}
+.checks li{display:flex;gap:.7rem}
+.checks svg{flex:none;margin-top:.25rem;color:var(--accent)}
+
+/* table */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:.85rem 1.1rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td:last-child,th:last-child{text-align:right}
+.table-note{margin-top:.9rem;color:var(--muted);font-size:.92rem}
+
+/* faq */
+.faq{display:grid;gap:.6rem;max-width:780px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:8px}
+summary{cursor:pointer;padding:1rem 1.2rem;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:1.3rem;color:var(--accent);line-height:1}
+details[open] summary::after{content:"\2212"}
+details p{padding:0 1.2rem 1.1rem;color:var(--muted)}
+
+/* contact band */
+.band{background:var(--accent);color:var(--accent-ink)}
+.band .wrap{display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;justify-content:space-between;padding-block:2.5rem}
+.band h2{font-size:clamp(1.4rem,3vw,1.9rem)}
+.band p{opacity:.88;margin-top:.4rem}
+.band .btn{background:var(--accent-ink);color:var(--accent)}
+.band .btn:hover{filter:brightness(.95)}
+footer{padding-block:2.5rem;border-top:1px solid var(--line)}
+footer .wrap{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:2rem;font-size:.93rem;color:var(--muted)}
+footer strong{display:block;color:var(--fg);margin-bottom:.5rem}
+footer a{display:block;text-decoration:none;padding:.15rem 0}
+footer a:hover{color:var(--fg)}
+
+/* drawer */
+.overlay{position:fixed;inset:0;background:var(--overlay);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:50;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.d-head,.d-body,.d-foot{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.d-head{display:flex;align-items:center;justify-content:space-between;min-height:64px;border-bottom:1px solid var(--line)}
+.d-head h2{font-size:1.2rem}
+.icon-btn{width:40px;height:40px;border-radius:6px;border:1px solid var(--line-strong);background:transparent;color:var(--fg);font:500 1.2rem var(--font);cursor:pointer}
+.d-body{flex:1;overflow-y:auto;padding-block:1.2rem;display:grid;gap:1.4rem;align-content:start}
+.empty{border:1px dashed var(--line-strong);border-radius:8px;padding:1.6rem 1.2rem;text-align:center;color:var(--muted)}
+.empty strong{display:block;color:var(--fg);margin-bottom:.3rem}
+.line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.3rem 1rem;align-items:center;padding-bottom:.9rem;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0;padding-bottom:0}
+.line .n{font-weight:600}
+.line .u{color:var(--muted);font-size:.88rem}
+.line .t{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.form{display:grid;gap:.85rem}
+.field{display:grid;gap:.3rem}
+.field label{font-size:.85rem;font-weight:600}
+.field input,.field select,.field textarea{width:100%;min-height:44px;padding:.55rem .75rem;border:1px solid var(--line-strong);border-radius:6px;background:var(--bg);color:var(--fg);font:400 1rem var(--font)}
+.field textarea{min-height:70px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.d-foot{border-top:1px solid var(--line);padding-block:1rem;padding-bottom:max(1rem,env(safe-area-inset-bottom,0px));display:grid;gap:.5rem;background:var(--surface)}
+.sum{display:flex;justify-content:space-between;color:var(--muted);font-variant-numeric:tabular-nums}
+.sum.total{color:var(--fg);font-weight:700;font-size:1.15rem;padding-top:.4rem;border-top:1px solid var(--line)}
+.msg{min-height:1.2em;font-size:.88rem;color:var(--err)}
+.fineprint{font-size:.82rem;color:var(--muted)}
+
+@media (max-width:900px){
+  .hero-grid,.split{grid-template-columns:1fr;gap:2rem}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps{grid-template-columns:1fr}
+  footer .wrap{grid-template-columns:1fr}
+  .nav{display:none}
+  .cart-btn{margin-left:auto}
+  .hero-photo .photo{aspect-ratio:16/9}
+}
+@media (max-width:560px){
+  section{padding-block:2.75rem}
+  .hero{padding-block:2rem}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .two{grid-template-columns:1fr}
+  dl.rows>div,.split .panel dl.rows>div{grid-template-columns:1fr;gap:.15rem}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#accueil"><span class="brand-mark" aria-hidden="true">RP</span>Rona Poulets</a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#catalogue">Catalogue</a>
+      <a href="#commande">Commander</a>
+      <a href="#livraison">Livraison</a>
+      <a href="#questions">Questions</a>
+    </nav>
+    <button class="btn btn-primary btn-sm cart-btn" id="open-cart" type="button">Ma commande <span class="count" id="count">0</span></button>
+  </div>
+</header>
+
+<main id="accueil">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">Vente de poulets de chair</span>
+          <h1>Vos poulets de chair, livrés dans toutes les zones</h1>
+          <p class="lead">Choisissez le nombre de poulets, indiquez votre adresse et envoyez la commande directement sur WhatsApp. Nous confirmons la livraison par message.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#catalogue">Voir les poulets</a>
+            <a class="btn btn-outline" href="#livraison">Livraison</a>
+          </div>
+          <p class="hero-note">Chaque commande est confirmée par WhatsApp avant la livraison.</p>
+        </div>
+        <aside class="panel" aria-label="Informations de commande">
+          <h3>En bref</h3>
+          <dl class="rows">
+            <div><dt>Prix</dt><dd>3 500 FCFA le poulet de chair</dd></div>
+            <div><dt>Livraison</dt><dd>Toutes zones</dd></div>
+            <div><dt>Commande</dt><dd>Envoyée sur WhatsApp, confirmée par message</dd></div>
+            <div><dt>Paiement</dt><dd>Convenu à la confirmation</dd></div>
+          </dl>
+        </aside>
+      </div>
+      <div class="hero-photo" id="hero-photo"></div>
+    </div>
+  </section>
+
+  <section id="catalogue">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Catalogue</span>
+        <h2>Nos poulets de chair</h2>
+        <p class="lead">Les prix sont en FCFA. Ajoutez vos articles, la commande se prépare dans le panneau « Ma commande ».</p>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section id="commande">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Commander</span>
+        <h2>Trois étapes, sans création de compte</h2>
+      </div>
+      <ol class="steps">
+        <li><h3>Choisir</h3><p>Ajoutez les poulets voulus au panier et réglez les quantités.</p></li>
+        <li><h3>Renseigner</h3><p>Indiquez votre nom, votre téléphone, votre quartier et le créneau souhaité.</p></li>
+        <li><h3>Envoyer sur WhatsApp</h3><p>Votre commande arrive pré-remplie. Nous confirmons le prix final et l'heure de passage.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="livraison" style="background:var(--surface);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">Livraison</span>
+        <h2>Nous livrons dans toutes les zones</h2>
+        <p class="lead">Indiquez votre adresse ou votre quartier dans la commande. Les frais de livraison éventuels sont confirmés sur WhatsApp avant la livraison.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="questions">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Questions fréquentes</span>
+        <h2>Avant de commander</h2>
+      </div>
+      <div class="faq">
+        <details><summary>Comment le prix final est-il confirmé ?</summary><p>Le panier affiche le total des poulets à 3 500 FCFA pièce. Les frais de livraison éventuels sont confirmés sur WhatsApp avant la livraison.</p></details>
+        <details><summary>Puis-je commander en grande quantité ?</summary><p>Oui. Indiquez la quantité dans votre commande, ou écrivez-nous sur WhatsApp pour un gros volume.</p></details>
+        <details><summary>Quels moyens de paiement ?</summary><p>Le mode de paiement est convenu avec vous lors de la confirmation de la commande sur WhatsApp.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="wrap">
+      <div>
+        <h2>Une question avant de commander ?</h2>
+        <p>Écrivez-nous sur WhatsApp, nous vous répondons.</p>
+      </div>
+      <a class="btn" id="wa-contact" href="#" target="_blank" rel="noopener">Écrire sur WhatsApp</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><strong>Rona Poulets</strong>Vente de poulets de chair, livraison dans toutes les zones.</div>
+    <div><strong>Contact</strong>WhatsApp : <span id="phone-text"></span></div>
+    <div><strong>Navigation</strong><a href="#catalogue">Catalogue</a><a href="#livraison">Livraison</a><a href="#questions">Questions fréquentes</a></div>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+  <div class="d-head">
+    <h2 id="drawer-title">Ma commande</h2>
+    <button class="icon-btn" id="close-cart" type="button" aria-label="Fermer">&times;</button>
+  </div>
+  <div class="d-body">
+    <div id="lines"></div>
+    <div class="form" id="form">
+      <div class="two">
+        <div class="field"><label for="f-name">Nom</label><input id="f-name" autocomplete="name" placeholder="Prénom et nom"></div>
+        <div class="field"><label for="f-phone">Téléphone</label><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="77 000 00 00"></div>
+      </div>
+      <div class="field" hidden><label for="f-zone">Zone de livraison</label><select id="f-zone"></select></div>
+      <div class="field" id="addr-field"><label for="f-address">Adresse ou quartier</label><input id="f-address" autocomplete="street-address" placeholder="Ex. quartier, rue, point de repère"></div>
+      <div class="two">
+        <div class="field"><label for="f-date">Date souhaitée</label><input id="f-date" type="date"></div>
+        <div class="field"><label for="f-slot">Créneau</label>
+          <select id="f-slot"><option>Matin</option><option>Après-midi</option></select></div>
+      </div>
+      <div class="field"><label for="f-note">Remarque (facultatif)</label><textarea id="f-note" placeholder="Ex. appeler avant d'arriver"></textarea></div>
+    </div>
+  </div>
+  <div class="d-foot">
+    <div class="sum"><span>Sous-total</span><span id="s-sub">0 FCFA</span></div>
+    <div class="sum"><span>Livraison</span><span id="s-fee">0 FCFA</span></div>
+    <div class="sum total"><span>Total des poulets</span><span id="s-total">0 FCFA</span></div>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    <a class="btn btn-primary" id="send" href="#" target="_blank" rel="noopener">Envoyer la commande sur WhatsApp</a>
+    <p class="fineprint">Le message s'ouvre dans WhatsApp, prêt à envoyer. La commande n'est prise en compte qu'une fois le message envoyé.</p>
+  </div>
+</aside>
+
+<script src="config.js"></script>
+<script>
+const { WHATSAPP, PHONE_TEXT } = window.APP_CONFIG;
+const FREE_FROM = 30000;
+
+/* Photos : indiquer le chemin du fichier, par exemple "photos/vif.jpg", pour remplacer les emplacements. */
+const PHOTOS = { hero: null, poulet: null, lot3: null, lot10: null };
+
+let PRODUCTS = [
+  { id:"poulet", cat:"vif", name:"Poulet de chair", w:"1 poulet", price:3500, unit:"pièce", tag:"Poulet de chair", desc:"Poulet de chair vendu à la pièce. Indiquez la quantité voulue dans votre commande." },
+  { id:"lot3", cat:"lot", name:"Lot de 3 poulets", w:"3 poulets", price:10500, unit:"lot", tag:"Lot", desc:"Trois poulets de chair au même prix unitaire de 3 500 FCFA." },
+  { id:"lot10", cat:"lot", name:"Lot de 10 poulets", w:"10 poulets", price:35000, unit:"lot", tag:"Lot", desc:"Dix poulets de chair au même prix unitaire de 3 500 FCFA. Pour les cérémonies et les repas de groupe." }
+];
+let ZONES = [
+  { id:"livraison", label:"Livraison, toutes zones", slot:"Matin ou après-midi", fee:0 }
+];
+
+const $ = id => document.getElementById(id);
+const fcfa = n => n.toLocaleString("fr-FR").replace(/[  ]/g," ") + " FCFA";
+let cart = {}, filter = "all";
+try { cart = JSON.parse(localStorage.getItem("tv-cart")||"{}") || {}; } catch(e) { cart = {}; }
+const known = new Set(PRODUCTS.map(p=>p.id));
+Object.keys(cart).forEach(k => { if(!known.has(k) || !(cart[k]>0)) delete cart[k]; });
+const save = () => { try { localStorage.setItem("tv-cart", JSON.stringify(cart)); } catch(e) {} };
+const qty = id => cart[id] || 0;
+const setQty = (id,q) => { if(q>0) cart[id]=Math.min(q,99); else delete cart[id]; save(); render(); };
+const subtotal = () => PRODUCTS.reduce((s,p)=>s+qty(p.id)*p.price,0);
+const items = () => PRODUCTS.filter(p=>qty(p.id)>0);
+const zone = () => ZONES.find(z=>z.id===$("f-zone").value) || ZONES[0];
+const fee = () => { const s=subtotal(); if(!s) return 0; if(zone().id==="retrait") return 0; return s>=FREE_FROM ? 0 : zone().fee; };
+
+function photo(key, label, cls){
+  const src = PHOTOS[key];
+  if(src) return '<div class="photo '+(cls||"")+'"><img src="'+src+'" alt="'+label+'" loading="lazy"></div>';
+  return null;
+}
+
+function renderHero(){
+  const html = photo("hero","Poulets de chair dans l'élevage");
+  $("hero-photo").innerHTML = html || '<div class="photo"><div class="photo-empty" style="height:100%;min-height:200px;width:100%">Photo de l\'élevage</div></div>';
+}
+
+function renderFilters(){}
+
+function renderGrid(){
+  const list = PRODUCTS.filter(p => filter==="all" || p.cat===filter);
+  $("grid").innerHTML = list.map(p=>{
+    const q = qty(p.id);
+    const ph = PHOTOS[p.id]
+      ? '<div class="photo"><img src="'+PHOTOS[p.id]+'" alt="'+p.name+'" loading="lazy"></div>'
+      : '<div class="photo"><div class="photo-empty" style="width:100%;height:100%"><div class="weight">'+p.w+'<small>quantité</small></div></div></div>';
+    const ctl = q>0
+      ? '<div class="stepper"><button type="button" data-dec="'+p.id+'" aria-label="Retirer un">&minus;</button><output aria-live="polite">'+q+'</output><button type="button" data-inc="'+p.id+'" aria-label="Ajouter un">+</button></div>'
+      : '<button type="button" class="btn btn-primary btn-sm" data-add="'+p.id+'">Ajouter</button>';
+    return '<article class="card">'+ph+'<div class="card-body"><span class="tag">'+p.tag+'</span><h3>'+p.name+'</h3><p class="desc">'+p.desc+'</p><div class="buy"><div class="price">'+fcfa(p.price).replace(" FCFA","")+' <small>FCFA / '+p.unit+'</small></div>'+ctl+'</div></div></article>';
+  }).join("");
+}
+
+function renderZones(){
+  $("f-zone").innerHTML = ZONES.map(z=>'<option value="'+z.id+'" selected>'+z.label+'</option>').join("");
+}
+
+function renderCart(){
+  const list = items();
+  const n = list.reduce((s,p)=>s+qty(p.id),0);
+  $("count").textContent = n;
+  $("lines").innerHTML = list.length
+    ? list.map(p=>'<div class="line"><div><div class="n">'+p.name+'</div><div class="u">'+fcfa(p.price)+' / '+p.unit+'</div></div><div class="t">'+fcfa(qty(p.id)*p.price)+'</div><div class="stepper"><button type="button" data-dec="'+p.id+'" aria-label="Retirer un">&minus;</button><output>'+qty(p.id)+'</output><button type="button" data-inc="'+p.id+'" aria-label="Ajouter un">+</button></div><div></div></div>').join("")
+    : '<div class="empty"><strong>Votre commande est vide</strong>Ajoutez des poulets depuis le catalogue pour la préparer.</div>';
+  const s = subtotal(), f = fee();
+  $("s-sub").textContent = fcfa(s);
+  $("s-fee").textContent = "À confirmer";
+  $("s-total").textContent = fcfa(s);
+  $("addr-field").hidden = zone().id==="retrait";
+  updateLink();
+}
+
+function buildMessage(){
+  const lines = items().map(p=>"- "+qty(p.id)+" x "+p.name+" : "+fcfa(qty(p.id)*p.price));
+  let m = "Bonjour Rona Poulets, je souhaite passer commande :\n"+lines.join("\n");
+  m += "\n\nTotal des poulets : "+fcfa(subtotal());
+  m += "\nLivraison : frais à confirmer";
+  m += "\n\nNom : "+$("f-name").value.trim();
+  m += "\nTéléphone : "+$("f-phone").value.trim();
+  m += "\nAdresse : "+$("f-address").value.trim();
+  if($("f-date").value) m += "\nDate souhaitée : "+$("f-date").value.split("-").reverse().join("/");
+  m += "\nCréneau : "+$("f-slot").value;
+  if($("f-note").value.trim()) m += "\nRemarque : "+$("f-note").value.trim();
+  return m;
+}
+function updateLink(){ $("send").href = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(buildMessage()); }
+
+function validate(){
+  if(!items().length) return "Ajoutez au moins un poulet à votre commande.";
+  if(!$("f-name").value.trim()) return "Indiquez votre nom.";
+  if($("f-phone").value.replace(/\D/g,"").length < 9) return "Indiquez un numéro de téléphone valide (9 chiffres minimum).";
+  if(zone().id!=="retrait" && !$("f-address").value.trim()) return "Indiquez votre adresse ou votre quartier.";
+  return "";
+}
+
+function submitOrder(){
+  const err = validate(); $("msg").textContent = err;
+  if(err) return;
+  const url = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(buildMessage());
+  cart = {}; save(); render();
+  window.location.href = url;
+}
+
+function render(){ renderGrid(); renderCart(); }
+function openCart(){ $("overlay").hidden=false; $("drawer").hidden=false; $("f-name").focus({preventScroll:true}); }
+function closeCart(){ $("overlay").hidden=true; $("drawer").hidden=true; $("open-cart").focus(); }
+
+document.addEventListener("click", e=>{
+  const t = e.target.closest("button,a"); if(!t) return;
+  if(t.dataset.add) setQty(t.dataset.add,1);
+  else if(t.dataset.inc) setQty(t.dataset.inc,qty(t.dataset.inc)+1);
+  else if(t.dataset.dec) setQty(t.dataset.dec,qty(t.dataset.dec)-1);
+  else if(t.dataset.f){ filter=t.dataset.f; renderFilters(); renderGrid(); }
+  else if(t.id==="open-cart") openCart();
+  else if(t.id==="close-cart") closeCart();
+  else if(t.id==="send"){ e.preventDefault(); submitOrder(); }
+});
+$("overlay").addEventListener("click", closeCart);
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("drawer").hidden) closeCart(); });
+["f-name","f-phone","f-zone","f-address","f-date","f-slot","f-note"].forEach(id=>{
+  $(id).addEventListener("input", ()=>{ $("msg").textContent=""; renderCart(); });
+  $(id).addEventListener("change", ()=>{ renderCart(); });
+});
+
+(function init(){
+  const d = new Date(); d.setDate(d.getDate()+1);
+  const iso = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  $("f-date").min = iso;
+  $("wa-contact").href = "https://wa.me/"+WHATSAPP;
+  $("phone-text").textContent = PHONE_TEXT;
+  renderHero(); renderFilters(); renderZones(); render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+Déposez ici vos photos (vif.jpg, pac.jpg...) puis indiquez leur chemin dans index.html (objet PHOTOS).
