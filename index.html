@@ -243,7 +243,7 @@ footer a:hover{color:var(--fg)}
             <div><dt>Prix</dt><dd>3 500 FCFA le poulet de chair</dd></div>
             <div><dt>Livraison</dt><dd>Toutes zones</dd></div>
             <div><dt>Commande</dt><dd>Envoyée sur WhatsApp, confirmée par message</dd></div>
-            <div><dt>Paiement</dt><dd>Convenu à la confirmation</dd></div>
+            <div><dt>Paiement</dt><dd>Wave ou espèces à la livraison</dd></div>
           </dl>
         </aside>
       </div>
@@ -295,7 +295,7 @@ footer a:hover{color:var(--fg)}
       <div class="faq">
         <details><summary>Comment le prix final est-il confirmé ?</summary><p>Le panier affiche le total des poulets à 3 500 FCFA pièce. Les frais de livraison éventuels sont confirmés sur WhatsApp avant la livraison.</p></details>
         <details><summary>Puis-je commander en grande quantité ?</summary><p>Oui. Indiquez la quantité dans votre commande, ou écrivez-nous sur WhatsApp pour un gros volume.</p></details>
-        <details><summary>Quels moyens de paiement ?</summary><p>Le mode de paiement est convenu avec vous lors de la confirmation de la commande sur WhatsApp.</p></details>
+        <details><summary>Quels moyens de paiement ?</summary><p>Vous payez soit par Wave, soit en espèces à la livraison. Choisissez votre mode de paiement dans la commande. Si vous choisissez Wave, nous vous envoyons le numéro sur WhatsApp à la confirmation.</p></details>
       </div>
     </div>
   </section>
@@ -339,6 +339,8 @@ footer a:hover{color:var(--fg)}
         <div class="field"><label for="f-slot">Créneau</label>
           <select id="f-slot"><option>Matin</option><option>Après-midi</option></select></div>
       </div>
+      <div class="field"><label for="f-pay">Mode de paiement</label>
+        <select id="f-pay"><option value="Espèces à la livraison">Espèces à la livraison</option><option value="Wave">Wave</option></select></div>
       <div class="field"><label for="f-note">Remarque (facultatif)</label><textarea id="f-note" placeholder="Ex. appeler avant d'arriver"></textarea></div>
     </div>
   </div>
@@ -439,6 +441,7 @@ function buildMessage(){
   m += "\nAdresse : "+$("f-address").value.trim();
   if($("f-date").value) m += "\nDate souhaitée : "+$("f-date").value.split("-").reverse().join("/");
   m += "\nCréneau : "+$("f-slot").value;
+  m += "\nPaiement : "+$("f-pay").value;
   if($("f-note").value.trim()) m += "\nRemarque : "+$("f-note").value.trim();
   return m;
 }
@@ -476,7 +479,7 @@ document.addEventListener("click", e=>{
 });
 $("overlay").addEventListener("click", closeCart);
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("drawer").hidden) closeCart(); });
-["f-name","f-phone","f-zone","f-address","f-date","f-slot","f-note"].forEach(id=>{
+["f-name","f-phone","f-zone","f-address","f-date","f-slot","f-pay","f-note"].forEach(id=>{
   $(id).addEventListener("input", ()=>{ $("msg").textContent=""; renderCart(); });
   $(id).addEventListener("change", ()=>{ renderCart(); });
 });
