@@ -218,18 +218,21 @@ footer a:hover{color:var(--fg)}
   dl.rows>div,.split .panel dl.rows>div{grid-template-columns:1fr;gap:.15rem}
 }
 
-.menu-btn{display:none;width:40px;height:40px;border:1px solid var(--line-strong);border-radius:6px;background:transparent;color:var(--fg);cursor:pointer;align-items:center;justify-content:center;padding:0}
-.mobile-menu{border-top:1px solid var(--line);background:var(--bg)}
-.mobile-menu .wrap{display:grid;gap:0;padding-block:.4rem .9rem}
-.mobile-menu a{padding:.85rem 0;border-bottom:1px solid var(--line);text-decoration:none;font-weight:500}
-.mobile-menu .btn{margin-top:.8rem}
-@media (max-width:900px){
-  .menu-btn{display:inline-flex;margin-left:auto}
-  .menu-btn + .cart-btn{margin-left:0}
-  #install{display:none}
-}
-@media (min-width:901px){.mobile-menu{display:none!important}}
 @media (max-width:400px){.site-header .wrap{gap:.6rem}.brand{font-size:1rem}}
+
+/* barre du bas (mobile) */
+.tabbar{display:none}
+@media (max-width:900px){
+  body{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+  .site-header .cart-btn{display:none}
+  #install{margin-left:auto}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--surface);border-top:1px solid var(--line);padding:6px max(4px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px))}
+  .tabbar a,.tabbar button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border:0;background:transparent;color:var(--muted);font:500 .72rem var(--font);text-decoration:none;cursor:pointer;border-radius:8px}
+  .tabbar svg{flex:none}
+  .tabbar a[aria-current="true"]{color:var(--accent)}
+  .tabbar .tab-cart{color:var(--accent);font-weight:700}
+  .tab-badge{position:absolute;top:2px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font:700 .7rem/18px var(--font);text-align:center;font-variant-numeric:tabular-nums}
+}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
 </style>
 </head>
@@ -245,19 +248,8 @@ footer a:hover{color:var(--fg)}
       <a href="#questions">Questions</a>
     </nav>
     <button class="btn btn-outline btn-sm" id="install" type="button" hidden>Installer l'appli</button>
-    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <button class="btn btn-primary btn-sm cart-btn" id="open-cart" type="button">Commande <span class="count" id="count">0</span></button>
   </div>
-  <nav class="mobile-menu" id="mobile-menu" aria-label="Menu" hidden>
-    <div class="wrap">
-      <a href="#catalogue">Catalogue</a>
-      <a href="#commande">Comment commander</a>
-      <a href="#livraison">Livraison</a>
-      <a href="#questions">Questions fréquentes</a>
-      <a href="#contact">Nous écrire sur WhatsApp</a>
-      <button class="btn btn-outline" id="install2" type="button" hidden>Installer l'appli</button>
-    </div>
-  </nav>
 </header>
 
 <main id="accueil">
@@ -338,7 +330,7 @@ footer a:hover{color:var(--fg)}
     </div>
   </section>
 
-  <div class="band" id="contact">
+  <div class="band">
     <div class="wrap">
       <div>
         <h2>Une question avant de commander ?</h2>
@@ -357,6 +349,13 @@ footer a:hover{color:var(--fg)}
   </div>
 </footer>
 
+<nav class="tabbar" aria-label="Navigation de l'appli">
+  <a href="#accueil" data-sec="accueil" aria-current="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Accueil</span></a>
+  <a href="#catalogue" data-sec="catalogue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>Poulets</span></a>
+  <button type="button" id="open-cart2" class="tab-cart" aria-label="Ouvrir ma commande"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg><span>Commande</span><b class="tab-badge" id="count2" hidden>0</b></button>
+  <a href="#livraison" data-sec="livraison"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Livraison</span></a>
+  <a href="#" id="nav-wa" target="_blank" rel="noopener"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>WhatsApp</span></a>
+</nav>
 <div class="overlay" id="overlay" hidden></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
   <div class="d-head">
@@ -432,7 +431,8 @@ function photo(key, label, cls){
 
 function renderHero(){
   const html = photo("hero","Poulets de chair dans l'élevage");
-  $("hero-photo").innerHTML = html || '<div class="photo"><div class="photo-empty" style="height:100%;min-height:200px;width:100%">Photo de l\'élevage</div></div>';
+  $("hero-photo").innerHTML = html || "";
+  $("hero-photo").hidden = !html;
 }
 
 function renderFilters(){}
@@ -458,7 +458,7 @@ function renderZones(){
 function renderCart(){
   const list = items();
   const n = list.reduce((s,p)=>s+qty(p.id),0);
-  $("count").textContent = n;
+  $("count").textContent = n; $("count2").textContent = n; $("count2").hidden = n === 0;
   $("lines").innerHTML = list.length
     ? list.map(p=>'<div class="line"><div><div class="n">'+p.name+'</div><div class="u">'+fcfa(p.price)+' / '+p.unit+'</div></div><div class="t">'+fcfa(qty(p.id)*p.price)+'</div><div class="stepper"><button type="button" data-dec="'+p.id+'" aria-label="Retirer un">&minus;</button><output>'+qty(p.id)+'</output><button type="button" data-inc="'+p.id+'" aria-label="Ajouter un">+</button></div><div></div></div>').join("")
     : '<div class="empty"><strong>Votre commande est vide</strong>Ajoutez des poulets depuis le catalogue pour la préparer.</div>';
@@ -504,13 +504,13 @@ function submitOrder(){
 
 /* Installation en appli */
 let deferredPrompt = null;
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; $("install").hidden = false; $("install2").hidden = false; });
-window.addEventListener("appinstalled", () => { deferredPrompt = null; $("install").hidden = true; $("install2").hidden = true; });
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; $("install").hidden = false; });
+window.addEventListener("appinstalled", () => { deferredPrompt = null; $("install").hidden = true; });
 async function installApp(){
   if(!deferredPrompt) return;
   deferredPrompt.prompt();
   try{ await deferredPrompt.userChoice; }catch(e){}
-  deferredPrompt = null; $("install").hidden = true; $("install2").hidden = true;
+  deferredPrompt = null; $("install").hidden = true;
 }
 (function iosHint(){
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -519,9 +519,26 @@ async function installApp(){
 })();
 if("serviceWorker" in navigator && location.protocol === "https:"){ window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{})); }
 
+/* section active dans la barre du bas */
+(function(){
+  if(!("IntersectionObserver" in window)) return;
+  const names = ["accueil","catalogue","livraison"];
+  const targets = [document.querySelector(".hero"), $("catalogue"), $("livraison")];
+  targets.forEach((el,i)=>{ el.dataset.tab = names[i]; });
+  const io = new IntersectionObserver(es=>{
+    es.forEach(en=>{
+      if(!en.isIntersecting) return;
+      document.querySelectorAll(".tabbar a[data-sec]").forEach(a=>{
+        if(a.dataset.sec===en.target.dataset.tab) a.setAttribute("aria-current","true"); else a.removeAttribute("aria-current");
+      });
+    });
+  }, { rootMargin:"-35% 0px -55% 0px" });
+  targets.forEach(el=>io.observe(el));
+})();
+
 function render(){ renderGrid(); renderCart(); }
 function openCart(){ $("overlay").hidden=false; $("drawer").hidden=false; $("f-name").focus({preventScroll:true}); }
-function closeCart(){ $("overlay").hidden=true; $("drawer").hidden=true; $("open-cart").focus(); }
+function closeCart(){ $("overlay").hidden=true; $("drawer").hidden=true; const b = $("open-cart2").offsetParent ? $("open-cart2") : $("open-cart"); b.focus(); }
 
 document.addEventListener("click", e=>{
   const t = e.target.closest("button,a"); if(!t) return;
@@ -529,16 +546,13 @@ document.addEventListener("click", e=>{
   else if(t.dataset.inc) setQty(t.dataset.inc,qty(t.dataset.inc)+1);
   else if(t.dataset.dec) setQty(t.dataset.dec,qty(t.dataset.dec)-1);
   else if(t.dataset.f){ filter=t.dataset.f; renderFilters(); renderGrid(); }
-  else if(t.id==="install" || t.id==="install2") installApp();
-  else if(t.id==="open-cart") openCart();
+  else if(t.id==="install") installApp();
+  else if(t.id==="open-cart" || t.id==="open-cart2") openCart();
   else if(t.id==="close-cart") closeCart();
   else if(t.id==="send"){ e.preventDefault(); submitOrder(); }
 });
-function setMenu(open){ $("mobile-menu").hidden = !open; $("menu-btn").setAttribute("aria-expanded", String(open)); $("menu-btn").setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu"); }
-$("menu-btn").addEventListener("click", ()=> setMenu($("mobile-menu").hidden));
-$("mobile-menu").addEventListener("click", e=>{ if(e.target.closest("a")) setMenu(false); });
 $("overlay").addEventListener("click", closeCart);
-document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ if(!$("drawer").hidden) closeCart(); else setMenu(false); } });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !$("drawer").hidden) closeCart(); });
 $("f-pay").addEventListener("change", ()=>{ $("pay-hint").hidden = $("f-pay").value !== "Wave"; });
 ["f-name","f-phone","f-zone","f-address","f-date","f-slot","f-pay","f-note"].forEach(id=>{
   $(id).addEventListener("input", ()=>{ $("msg").textContent=""; renderCart(); });
@@ -550,6 +564,7 @@ $("f-pay").addEventListener("change", ()=>{ $("pay-hint").hidden = $("f-pay").va
   const iso = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   $("f-date").min = iso;
   $("wa-contact").href = "https://wa.me/"+WHATSAPP;
+  $("nav-wa").href = "https://wa.me/"+WHATSAPP;
   $("phone-text").textContent = PHONE_TEXT;
   renderHero(); renderFilters(); renderZones(); render();
 })();
